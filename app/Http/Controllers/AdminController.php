@@ -2,67 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SellerApplication;
 use App\Models\Order;
 use App\Models\Apartment;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
-    public function dashboard()
-    {
-        $apartment = Apartment::find(auth()->user()->apartment_id);
-        $pendingApplications = SellerApplication::where('apartment_id', auth()->user()->apartment_id)
-            ->where('status', 'pending')
-            ->count();
-        $totalOrders = Order::where('apartment_id', auth()->user()->apartment_id)->count();
-        $totalRevenue = Order::where('apartment_id', auth()->user()->apartment_id)
-            ->where('payment_status', 'paid')
-            ->sum('platform_fee');
-
-        return view('admin.dashboard', compact(
-            'apartment',
-            'pendingApplications',
-            'totalOrders',
-            'totalRevenue'
-        ));
-    }
-
-    public function sellers()
-    {
-        $applications = SellerApplication::with(['user', 'approver'])
-            ->where('apartment_id', auth()->user()->apartment_id)
-            ->latest()
-            ->paginate(15);
-
-        return view('admin.sellers', compact('applications'));
-    }
-
-    public function approveSeller(Request $request, $id)
-    {
-        $application = SellerApplication::where('apartment_id', auth()->user()->apartment_id)
-            ->findOrFail($id);
-
-        $request->validate([
-            'status' => 'required|in:approved,rejected',
-            'remarks' => 'nullable|string',
-        ]);
-
-        $application->update([
-            'status' => $request->status,
-            'approved_by' => auth()->id(),
-            'approved_at' => now(),
-            'remarks' => $request->remarks,
-        ]);
-
-        // Update user role if approved
-        if ($request->status === 'approved') {
-            $application->user->update(['role' => 'seller']);
-        }
-
-        return back()->with('success', 'Seller application updated successfully');
-    }
-
     public function orders()
     {
         $orders = Order::with(['buyer', 'seller', 'items'])
@@ -86,11 +31,26 @@ class AdminController extends Controller
             'pickup_location' => 'required|string|max:255',
             'pickup_start_time' => 'required|date_format:H:i',
             'pickup_end_time' => 'required|date_format:H:i',
+            'payment_online_enabled' => 'nullable|boolean',
+            'payment_qr_enabled' => 'nullable|boolean',
+            'payment_cash_enabled' => 'nullable|boolean',
         ]);
+
+        // Ensure at least one payment method is enabled
+        if (!$request->has('payment_online_enabled') && 
+            !$request->has('payment_qr_enabled') && 
+            !$request->has('payment_cash_enabled')) {
+            return back()->withErrors(['payment' => 'At least one payment method must be enabled.'])->withInput();
+        }
+
+        // Convert checkbox values (if not checked, they won't be in request)
+        $validated['payment_online_enabled'] = $request->has('payment_online_enabled');
+        $validated['payment_qr_enabled'] = $request->has('payment_qr_enabled');
+        $validated['payment_cash_enabled'] = $request->has('payment_cash_enabled');
 
         $apartment = Apartment::find(auth()->user()->apartment_id);
         $apartment->update($validated);
 
-        return back()->with('success', 'Settings updated successfully');
+        return back()->with('success', '✅ Settings updated successfully');
     }
 }

@@ -1,16 +1,21 @@
-# Apartment Community POS (MVP)
+# D'house Waffle 🧇
 
-A Laravel-based marketplace system for apartment communities where residents can buy and sell food/products internally.
+A Laravel-based ordering system for **D'house Waffle** - delivering delicious handmade waffles to apartment residents.
+
+## About
+
+D'house Waffle is a waffle business operating within apartment communities. Residents can easily order fresh waffles through this platform and pick them up at the apartment lobby.
 
 ## Features
 
-- **Multi-Role System**: Buyers, Sellers, Apartment Admin, Super Admin
-- **Seller Application**: Buyers can apply to become sellers (requires admin approval)
-- **Product Management**: Sellers can manage their products
-- **Order System**: Complete order flow with cart, checkout, and status tracking
-- **Payment Integration Ready**: Webhook support for Billplz and ToyyibPay
-- **Mobile-First Design**: Responsive UI optimized for mobile devices
-- **Admin Dashboard**: Manage sellers, orders, and apartment settings
+- **🧇 Waffle Menu**: Browse classic and premium waffle selections
+- **🛒 Easy Ordering**: Simple cart and checkout system
+- **💳 Multiple Payment Options**: Cash, QR Payment (DuitNow/TNG), or Online Payment
+- **📱 Mobile-First Design**: Optimized for smartphone ordering
+- **👨‍🍳 Staff Operations**: Order processing with limited access
+- **🧇 Owner Dashboard**: Full business management and revenue tracking
+- **📊 Analytics**: Sales statistics and performance monitoring
+- **🕐 Order Tracking**: Real-time order status updates
 
 ## Tech Stack
 
@@ -72,21 +77,27 @@ Visit: `http://localhost:8000`
 
 ## Default Credentials
 
-### Super Admin
+### 🔧 Super Admin (System Owner)
 - Email: `super@admin.com`
 - Password: `password`
+- Access: Platform-wide settings
 
-### Apartment Admin
-- Email: `admin@apartment.com`
+### 🧇 Owner (D'house Waffle Business Owner)
+- Email: `owner@dhouse.com`
 - Password: `password`
+- Access: Full business management
 
-### Seller
-- Email: `seller@test.com`
+### 👨‍🍳 Staff (D'house Waffle Staff)
+- Email: `staff@dhouse.com`
 - Password: `password`
+- Access: Order processing only
 
-### Buyer
-- Email: `buyer@test.com`
+### 👤 Customer (Resident)
+- Email: `customer@test.com`
 - Password: `password`
+- Access: Order waffles
+
+> **📖 Detailed Role Documentation**: See [NEW_ROLE_STRUCTURE.md](NEW_ROLE_STRUCTURE.md) for complete role structure and permissions.
 
 ## Project Structure
 
@@ -156,40 +167,49 @@ resources/views/
 
 ## User Flows
 
-### Buyer Flow
-1. Register/Login → Redirected to `/home`
-2. Browse products
-3. Add to cart (stored in localStorage)
-4. Checkout → Place order
-5. Payment (webhook integration)
-6. View order status
+### 👤 Customer Flow
+1. Register/Login → Browse waffle menu at `/home`
+2. Add waffles to cart (stored in localStorage)
+3. Proceed to checkout
+4. Choose payment method:
+   - Cash (pay on pickup)
+   - QR Payment (upload proof)
+   - Online Payment (via Billplz/ToyyibPay)
+5. Receive order confirmation
+6. Track order status
+7. Pick up at lobby when ready
 
-### Seller Application Flow
-1. Buyer applies to become seller
-2. Application goes to "pending" status
-3. Apartment Admin reviews and approves/rejects
-4. If approved, user role changes to "seller"
-5. Seller can now access seller dashboard and manage products
+### 👨‍🍳 Staff Flow
+1. Login → Access `/staff/dashboard`
+2. View incoming orders
+3. Update order status: pending → preparing → ready → completed
+4. Mark orders as paid (for cash/QR payments)
+5. Process daily operations
 
-### Seller Flow
-1. Login → Redirected to `/seller/dashboard`
-2. Create/manage products
-3. View orders
-4. Update order status: pending → preparing → ready → completed
+### 🧇 Owner Flow
+1. Login → Access `/owner/dashboard`
+2. View full revenue and statistics
+3. Manage waffle menu (add/edit items)
+4. Process orders (same as staff)
+5. Configure business settings
+6. Setup QR payment code
+7. Access complete business analytics
 
-### Admin Flow
-1. Login → Redirected to `/admin/dashboard`
-2. Approve/reject seller applications
-3. View all orders and transactions
-4. Configure apartment settings (service fee, pickup location, pickup times)
+### 🔧 Super Admin Flow
+1. Login → Access `/super/dashboard`
+2. Manage platform settings
+3. Configure payment gateways
+4. View all apartments and users
+5. System-level administration
 
 ## Business Rules
 
-1. **Service Fee**: Default 5% platform fee on each order
-2. **Payment**: Direct to seller (platform does not hold money)
-3. **Pickup**: Fixed location and time window set by admin
-4. **Single Tenant**: One apartment per installation (MVP)
-5. **Seller Approval**: Only approved sellers can sell products
+1. **Single Seller**: D'house Waffle is the only seller on the platform
+2. **No Service Fee**: Direct purchase from seller (0% platform fee)
+3. **Payment Options**: Cash on pickup, QR payment, or online payment
+4. **Pickup Location**: Lobby Utama (Ground Floor)
+5. **Operating Hours**: 9:00 AM - 9:00 PM daily
+6. **Order Management**: Real-time order tracking and status updates
 
 ## Payment Integration
 
@@ -208,14 +228,15 @@ To integrate:
 - `POST /webhook/billplz` - Billplz payment callback
 - `POST /webhook/toyyibpay` - ToyyibPay payment callback
 
-## Future Enhancements (Not in MVP)
+## Future Enhancements
 
-- Multi-tenant support
-- Wallet/escrow system
-- Chat between buyer and seller
-- Product reviews and ratings
-- Native mobile apps
-- Advanced analytics
+- 📸 Product images for each waffle
+- ⭐ Customer reviews and ratings
+- 🎁 Loyalty points and rewards
+- 📅 Pre-order scheduling
+- 🔔 Push notifications for order updates
+- 📊 Advanced sales analytics
+- 🏢 Multi-apartment expansion
 
 ## Database Schema
 

@@ -20,7 +20,7 @@
 
         <div class="flex justify-between text-xl font-bold mb-6">
             <span>Total Amount:</span>
-            <span class="text-blue-600">RM {{ number_format($order->total_amount, 2) }}</span>
+            <span class="text-amber-600 font-bold">RM {{ number_format($order->total_amount, 2) }}</span>
         </div>
 
         <div class="bg-yellow-50 border border-yellow-200 p-4 rounded mb-6">
@@ -32,7 +32,7 @@
         </div>
 
         <button onclick="simulatePayment()" 
-            class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition">
+            class="w-full waffle-gradient text-white py-3 rounded-lg hover:shadow-lg transition font-semibold">
             Proceed to Payment (Demo)
         </button>
     </div>
@@ -41,8 +41,10 @@
 @push('scripts')
 <script>
 function simulatePayment() {
-    alert('In production, this would redirect to Billplz/ToyyibPay payment gateway');
-    window.location.href = '{{ route("buyer.orders") }}';
+    showToast('Payment processing... Redirecting to payment gateway', 'info');
+    setTimeout(() => {
+        window.location.href = '{{ route("buyer.orders") }}';
+    }, 1500);
 }
 </script>
 @endpush

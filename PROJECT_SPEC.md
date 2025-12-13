@@ -1,23 +1,24 @@
 # PROJECT_SPEC.md
-## Apartment Community POS (MVP)
+## D'house Waffle (MVP)
 Single Tenant • SaaS-Ready • Laravel
 
 ---
 
 ## 1. PROJECT OVERVIEW
-This project is a Laravel-based MVP for an Apartment Community POS & Marketplace.
+This project is a Laravel-based ordering system for D'house Waffle - a waffle business operating within apartment communities.
 
 Purpose:
-- Allow apartment residents to buy & sell food/products internally
-- Sellers manage orders via a simple dashboard
-- Apartment management (JMB) approves sellers and controls rules
-- Payments are made directly to sellers
-- Platform takes a service fee (default 5%)
+- Allow apartment residents to order fresh handmade waffles
+- D'house Waffle manages menu and orders via dashboard
+- Simple ordering and pickup system
+- Multiple payment options (Cash, QR, Online)
+- No platform fees - direct sales model
 
 Scope:
-- Single apartment only (single tenant)
-- SaaS-ready design
-- Focus on simplicity and real usage
+- Single seller (D'house Waffle)
+- Single apartment location
+- Focus on easy ordering and quick pickup
+- Mobile-first design
 
 ---
 
@@ -30,20 +31,21 @@ Scope:
 ---
 
 ## 3. ROLES
-buyer  
-seller  
-apartment_admin  
-super_admin  
+buyer (customers/residents)
+seller (D'house Waffle staff)
+apartment_admin (apartment management)
+super_admin (system administrator)  
 
 ---
 
 ## 4. CORE BUSINESS RULES
-1. Only approved sellers can sell
-2. Seller approval by apartment_admin
-3. Payment goes directly to seller
-4. Platform does not hold money
-5. Pickup at lobby, fixed time window
-6. Internal apartment use only
+1. Single seller model (D'house Waffle only)
+2. No seller application system needed
+3. Direct payment to seller (no platform fee)
+4. Three payment methods: Cash, QR Payment, Online
+5. Pickup at Lobby Utama (Ground Floor)
+6. Operating hours: 9:00 AM - 9:00 PM
+7. Apartment residents only
 
 ---
 
@@ -57,7 +59,10 @@ pickup_start_time, pickup_end_time, status, timestamps
 id, apartment_id, name, email, password, phone,
 role, unit_no, block, status, timestamps
 
-### seller_applications
+### categories (for waffle types)
+id, name, slug, icon, is_active, timestamps
+
+### seller_applications (legacy - not used)
 id, user_id, apartment_id, status, approved_by,
 approved_at, remarks, timestamps
 
@@ -89,28 +94,30 @@ super_admin → /super/dashboard
 
 ---
 
-## 7. SELLER APPLICATION FLOW
-Buyer applies → pending → admin approves → role becomes seller
+## 7. SELLER ACCOUNT
+D'house Waffle has pre-created seller account (no application needed)
 
 ---
 
-## 8. BUYER ORDER FLOW
-Browse → cart → checkout → payment → webhook → seller dashboard
+## 8. CUSTOMER ORDER FLOW
+Browse waffle menu → Add to cart → Checkout → Select payment method → Place order → Track status → Pickup at lobby
 
 ---
 
-## 9. SELLER DASHBOARD
-- View own orders
-- Update status: pending → preparing → ready → completed
-- Manage products
-- View simple sales summary
+## 9. D'HOUSE WAFFLE DASHBOARD
+- View all incoming orders
+- Update order status: pending → preparing → ready → completed
+- Manage waffle menu (add/edit/disable items)
+- Mark payments as received (for cash/QR)
+- View daily/monthly sales statistics
 
 ---
 
 ## 10. ADMIN DASHBOARD
-- Approve sellers
-- View all orders
-- Set pickup rules & service fee
+- View all orders and transactions
+- Monitor business performance
+- Configure pickup location and operating hours
+- Manage apartment settings
 
 ---
 
@@ -121,7 +128,7 @@ SellerController
 AdminController  
 OrderController  
 ProductController  
-SellerApplicationController  
+CategoryController (for waffle categories)  
 PaymentWebhookController  
 
 ---
@@ -131,11 +138,11 @@ PaymentWebhookController
 Public:
 /, /login, /register
 
-Buyer:
-/home, /products, /cart, /checkout, /orders
+Customer (Buyer):
+/home (browse waffles), /cart, /checkout, /orders
 
-Seller:
-/seller/dashboard, /seller/orders, /seller/products
+D'house Waffle (Seller):
+/seller/dashboard, /seller/orders, /seller/products (menu management)
 
 Admin:
 /admin/dashboard, /admin/sellers, /admin/orders, /admin/settings
@@ -148,29 +155,39 @@ Payment: pending, paid, failed
 
 ---
 
-## 14. WHAT NOT TO BUILD
-- Multi-tenant
+## 14. WHAT NOT TO BUILD (MVP)
+- Multi-seller marketplace
+- Seller application system
 - Wallet/escrow
-- Chat
-- Reviews
-- Mobile app
+- Chat system
+- Customer reviews
+- Native mobile app
+- Advanced analytics
 
 ---
 
-## 15. CODING ORDER
-1. Migrations
-2. Models
-3. Auth & middleware
-4. Seller application
-5. Products
-6. Orders
-7. Seller dashboard
-8. Admin dashboard
-9. Payment webhook
+## 15. IMPLEMENTATION NOTES
+✅ Completed:
+- User authentication system
+- Waffle product management
+- Order system with cart
+- Multiple payment methods (Cash, QR, Online)
+- Seller dashboard for D'house Waffle
+- Admin dashboard
+- Mobile-responsive design
+
+🎯 Focus Areas:
+- Simple waffle ordering experience
+- Fast order processing
+- Easy pickup coordination
+- Real-time order tracking
 
 ---
 
-## 16. CURSOR INSTRUCTION
-Read this file fully before coding.
-Follow schema and rules strictly.
-Keep code simple and clean.
+## 16. BRAND IDENTITY
+- Name: D'house Waffle 🧇
+- Colors: Amber/Orange gradient (waffle theme)
+- Target: Apartment residents
+- Value Proposition: Fresh handmade waffles delivered to your doorstep
+- Operating Hours: 9:00 AM - 9:00 PM
+- Pickup: Lobby Utama (Ground Floor)

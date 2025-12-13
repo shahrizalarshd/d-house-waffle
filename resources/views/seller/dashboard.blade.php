@@ -1,10 +1,13 @@
 @extends('layouts.app')
 
-@section('title', 'Seller Dashboard')
+@section('title', "D'house Waffle Dashboard")
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-6">
-    <h1 class="text-2xl font-bold text-gray-800 mb-6">Seller Dashboard</h1>
+    <div class="flex items-center gap-3 mb-6">
+        <span class="text-4xl">🧇</span>
+        <h1 class="text-2xl font-bold text-gray-800">D'house Waffle Dashboard</h1>
+    </div>
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
@@ -12,9 +15,14 @@
             <p class="text-gray-600 text-sm">Total Orders</p>
             <p class="text-2xl font-bold text-blue-600">{{ $totalOrders }}</p>
         </div>
-        <div class="bg-white rounded-lg shadow p-4">
-            <p class="text-gray-600 text-sm">Pending</p>
+        <div class="bg-white rounded-lg shadow p-4 relative">
+            <p class="text-gray-600 text-sm">Pending Orders</p>
             <p class="text-2xl font-bold text-yellow-600">{{ $pendingOrders }}</p>
+            @if($pendingOrders > 0)
+            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-8 w-8 flex items-center justify-center animate-pulse shadow-lg">
+                {{ $pendingOrders > 9 ? '9+' : $pendingOrders }}
+            </span>
+            @endif
         </div>
         <div class="bg-white rounded-lg shadow p-4">
             <p class="text-gray-600 text-sm">Total Earnings</p>
@@ -27,24 +35,36 @@
     </div>
 
     <!-- Quick Actions -->
-    <div class="grid grid-cols-2 gap-4 mb-6">
-        <a href="{{ route('seller.products.create') }}" 
-            class="bg-blue-600 text-white p-4 rounded-lg text-center hover:bg-blue-700 transition">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        @if(auth()->user()->isOwner())
+        <a href="{{ route('owner.sales-report') }}" 
+            class="bg-gradient-to-r from-green-500 to-emerald-600 text-white p-4 rounded-lg text-center hover:from-green-600 hover:to-emerald-700 transition">
+            <i class="fas fa-chart-bar text-2xl mb-2"></i>
+            <p class="font-semibold">Sales Report</p>
+        </a>
+        <a href="{{ route('owner.products.create') }}" 
+            class="bg-gradient-to-r from-amber-500 to-orange-500 text-white p-4 rounded-lg text-center hover:from-amber-600 hover:to-orange-600 transition">
             <i class="fas fa-plus-circle text-2xl mb-2"></i>
-            <p class="font-semibold">Add Product</p>
+            <p class="font-semibold">Add New Waffle</p>
         </a>
-        <a href="{{ route('seller.products') }}" 
-            class="bg-purple-600 text-white p-4 rounded-lg text-center hover:bg-purple-700 transition">
+        <a href="{{ route('owner.products') }}" 
+            class="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 rounded-lg text-center hover:from-purple-700 hover:to-pink-700 transition">
             <i class="fas fa-box text-2xl mb-2"></i>
-            <p class="font-semibold">My Products</p>
+            <p class="font-semibold">Manage Menu</p>
         </a>
+        <a href="{{ route('owner.profile') }}" 
+            class="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 rounded-lg text-center hover:from-purple-700 hover:to-pink-700 transition">
+            <i class="fas fa-qrcode text-2xl mb-2"></i>
+            <p class="font-semibold">QR Payment Setup</p>
+        </a>
+        @endif
     </div>
 
     <!-- Recent Orders -->
     <div class="bg-white rounded-lg shadow">
         <div class="p-4 border-b flex justify-between items-center">
             <h2 class="font-bold text-lg">Recent Orders</h2>
-            <a href="{{ route('seller.orders') }}" class="text-blue-600 text-sm hover:underline">View All</a>
+            <a href="{{ auth()->user()->isOwner() ? route('owner.orders') : route('staff.orders') }}" class="text-blue-600 text-sm hover:underline">View All</a>
         </div>
         
         @if($recentOrders->isEmpty())

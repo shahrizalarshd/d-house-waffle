@@ -1,4 +1,4 @@
-# Setup Guide - Apartment POS MVP
+# Setup Guide - D'house Waffle MVP
 
 ## Quick Start with Docker (Recommended)
 

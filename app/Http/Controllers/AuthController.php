@@ -24,13 +24,13 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
-            // Redirect based on role
+            // Redirect based on role (new structure)
             $user = Auth::user();
             return match ($user->role) {
-                'seller' => redirect()->intended('/seller/dashboard'),
-                'apartment_admin' => redirect()->intended('/admin/dashboard'),
+                'staff' => redirect()->intended('/staff/dashboard'),
+                'owner' => redirect()->intended('/owner/dashboard'),
                 'super_admin' => redirect()->intended('/super/dashboard'),
-                default => redirect()->intended('/home'),
+                default => redirect()->intended('/home'), // customers
             };
         }
 
@@ -64,7 +64,7 @@ class AuthController extends Controller
             'phone' => $validated['phone'],
             'unit_no' => $validated['unit_no'],
             'block' => $validated['block'],
-            'role' => 'buyer',
+            'role' => 'customer',
             'status' => 'active',
         ]);
 

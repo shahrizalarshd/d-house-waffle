@@ -17,12 +17,16 @@ class Apartment extends Model
         'pickup_start_time',
         'pickup_end_time',
         'status',
+        'payment_online_enabled',
+        'payment_qr_enabled',
+        'payment_cash_enabled',
     ];
 
     protected $casts = [
         'service_fee_percent' => 'decimal:2',
-        'pickup_start_time' => 'datetime',
-        'pickup_end_time' => 'datetime',
+        'payment_online_enabled' => 'boolean',
+        'payment_qr_enabled' => 'boolean',
+        'payment_cash_enabled' => 'boolean',
     ];
 
     public function users()
@@ -38,10 +42,5 @@ class Apartment extends Model
     public function orders()
     {
         return $this->hasMany(Order::class);
-    }
-
-    public function sellerApplications()
-    {
-        return $this->hasMany(SellerApplication::class);
     }
 }

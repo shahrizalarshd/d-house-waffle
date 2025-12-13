@@ -22,6 +22,10 @@ class Order extends Model
         'pickup_time',
         'payment_status',
         'payment_ref',
+        'payment_method',
+        'paid_at',
+        'payment_proof',
+        'payment_notes',
     ];
 
     protected $casts = [
@@ -29,6 +33,7 @@ class Order extends Model
         'platform_fee' => 'decimal:2',
         'seller_amount' => 'decimal:2',
         'pickup_time' => 'datetime',
+        'paid_at' => 'datetime',
     ];
 
     public function apartment()
@@ -84,5 +89,32 @@ class Order extends Model
     public function isPaid()
     {
         return $this->payment_status === 'paid';
+    }
+
+    public function isCashPayment()
+    {
+        return $this->payment_method === 'cash';
+    }
+
+    public function isOnlinePayment()
+    {
+        return $this->payment_method === 'online';
+    }
+
+    public function isQRPayment()
+    {
+        return $this->payment_method === 'qr';
+    }
+
+    public function hasPaymentProof()
+    {
+        return !empty($this->payment_proof);
+    }
+
+    public function getPaymentProofUrl()
+    {
+        return $this->payment_proof 
+            ? asset('storage/' . $this->payment_proof)
+            : null;
     }
 }

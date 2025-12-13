@@ -1,4 +1,4 @@
-# Files Created/Modified for Apartment POS MVP
+# Files Created/Modified for D'house Waffle MVP
 
 ## Database Migrations
 

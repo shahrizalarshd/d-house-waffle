@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "==================================="
-echo "Apartment POS - Setup Script"
+echo "D'house Waffle - Setup Script"
 echo "==================================="
 echo ""
 

@@ -4,7 +4,10 @@
 
 @section('content')
 <div class="max-w-4xl mx-auto px-4 py-6">
-    <h1 class="text-2xl font-bold text-gray-800 mb-6">Shopping Cart</h1>
+    <div class="flex items-center gap-3 mb-6">
+        <span class="text-3xl">🛒</span>
+        <h1 class="text-2xl font-bold text-gray-800">Your Order</h1>
+    </div>
 
     <div id="cart-items" class="space-y-4 mb-6">
         <!-- Cart items will be loaded by JavaScript -->
@@ -18,8 +21,8 @@
     </div>
 
     <button onclick="proceedToCheckout()" 
-        class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition">
-        Proceed to Checkout
+        class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white py-3 rounded-lg hover:from-amber-600 hover:to-orange-600 transition font-semibold">
+        🧇 Proceed to Checkout
     </button>
 </div>
 
@@ -33,8 +36,11 @@ function renderCart() {
     if (cart.length === 0) {
         container.innerHTML = `
             <div class="bg-white rounded-lg shadow p-8 text-center">
-                <i class="fas fa-shopping-cart text-6xl text-gray-300 mb-4"></i>
-                <p class="text-gray-600">Your cart is empty</p>
+                <div class="text-6xl mb-4">🛒</div>
+                <p class="text-gray-600 mb-4">Your cart is empty</p>
+                <a href="{{ route('home') }}" class="inline-block bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-2 rounded-lg hover:from-amber-600 hover:to-orange-600">
+                    Browse Waffles
+                </a>
             </div>
         `;
         document.getElementById('cart-total').textContent = 'RM 0.00';
@@ -55,7 +61,7 @@ function renderCart() {
                     <span class="font-semibold">${item.quantity}</span>
                     <button onclick="updateQuantity(${index}, 1)" class="bg-gray-200 px-2 py-1 rounded">+</button>
                 </div>
-                <span class="font-bold text-blue-600">RM ${(item.price * item.quantity).toFixed(2)}</span>
+                <span class="font-bold text-amber-600">RM ${(item.price * item.quantity).toFixed(2)}</span>
             </div>
         </div>
     `).join('');
@@ -69,15 +75,18 @@ function updateQuantity(index, change) {
         cart.splice(index, 1);
     }
     localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartBadge(); // Update cart badge
     renderCart();
 }
 
 function removeFromCart(index) {
-    if (confirm('Remove this item from cart?')) {
+    customConfirm('🗑️ Remove this item from cart?', function() {
         cart.splice(index, 1);
         localStorage.setItem('cart', JSON.stringify(cart));
+        updateCartBadge(); // Update cart badge
         renderCart();
-    }
+        showToast('Item removed from cart', 'info');
+    });
 }
 
 function updateTotal() {
@@ -87,7 +96,7 @@ function updateTotal() {
 
 function proceedToCheckout() {
     if (cart.length === 0) {
-        alert('Your cart is empty');
+        showToast('Your cart is empty', 'warning');
         return;
     }
     window.location.href = '{{ route("checkout") }}';

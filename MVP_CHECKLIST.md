@@ -1,4 +1,4 @@
-# MVP Checklist - Apartment POS
+# MVP Checklist - D'house Waffle
 
 ## ✅ Completed Features
 
