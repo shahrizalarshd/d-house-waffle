@@ -40,7 +40,7 @@ class ProductController extends Controller
             'is_active' => $validated['is_active'] ?? true,
         ]);
 
-        return redirect()->route('seller.products')->with('success', 'Product created successfully');
+        return redirect()->route('owner.products')->with('success', 'Product created successfully');
     }
 
     public function edit($id)
@@ -74,18 +74,18 @@ class ProductController extends Controller
 
         $product->update($validated);
 
-        return redirect()->route('seller.products')->with('success', 'Product updated successfully');
+        return redirect()->route('owner.products')->with('success', 'Product updated successfully');
     }
 
     public function destroy($id)
     {
         $product = Product::where('seller_id', auth()->id())->findOrFail($id);
-        
+
         // Delete image if exists
         if ($product->image && \Storage::disk('public')->exists($product->image)) {
             \Storage::disk('public')->delete($product->image);
         }
-        
+
         $product->delete();
 
         return back()->with('success', 'Product deleted successfully');

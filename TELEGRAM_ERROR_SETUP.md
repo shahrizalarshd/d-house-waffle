@@ -380,3 +380,4 @@ After setup:
 
 **Ready to catch all production errors in real-time!** 🎉
 
+

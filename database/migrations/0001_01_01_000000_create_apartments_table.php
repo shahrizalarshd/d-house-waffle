@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('pickup_location');
             $table->time('pickup_start_time');
             $table->time('pickup_end_time');
-            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->string('status')->default('active');
             $table->timestamps();
         });
     }

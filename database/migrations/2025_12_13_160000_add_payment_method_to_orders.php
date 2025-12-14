@@ -12,10 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->enum('payment_method', ['online', 'cash'])
-                ->default('online')
-                ->after('payment_status');
-            
+            $table->string('payment_method')->default('online')->after('payment_status');
+
             $table->timestamp('paid_at')->nullable()->after('payment_ref');
         });
     }
@@ -30,4 +28,3 @@ return new class extends Migration
         });
     }
 };
-

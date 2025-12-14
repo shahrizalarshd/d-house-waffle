@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -24,8 +25,10 @@ return new class extends Migration
             $table->text('payment_notes')->nullable()->after('payment_proof');
         });
 
-        // Update payment_method enum to include 'qr'
-        DB::statement("ALTER TABLE orders MODIFY COLUMN payment_method ENUM('online', 'cash', 'qr') DEFAULT 'online'");
+        // Update payment_method enum to include 'qr' (MySQL only)
+        if (DB::connection()->getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE orders MODIFY COLUMN payment_method ENUM('online', 'cash', 'qr') DEFAULT 'online'");
+        }
     }
 
     /**
@@ -41,7 +44,8 @@ return new class extends Migration
             $table->dropColumn(['payment_proof', 'payment_notes']);
         });
 
-        DB::statement("ALTER TABLE orders MODIFY COLUMN payment_method ENUM('online', 'cash') DEFAULT 'online'");
+        if (DB::connection()->getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE orders MODIFY COLUMN payment_method ENUM('online', 'cash') DEFAULT 'online'");
+        }
     }
 };
-

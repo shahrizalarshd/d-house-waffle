@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('order_id')->constrained()->onDelete('cascade');
             $table->string('gateway');
             $table->decimal('amount', 10, 2);
-            $table->enum('status', ['pending', 'paid', 'failed'])->default('pending');
+            $table->string('status')->default('pending');
             $table->string('reference_no')->nullable();
             $table->timestamp('paid_at')->nullable();
             $table->timestamps();

@@ -20,10 +20,10 @@ return new class extends Migration
             $table->decimal('total_amount', 10, 2);
             $table->decimal('platform_fee', 10, 2);
             $table->decimal('seller_amount', 10, 2);
-            $table->enum('status', ['pending', 'preparing', 'ready', 'completed', 'cancelled'])->default('pending');
+            $table->string('status')->default('pending');
             $table->string('pickup_location');
             $table->dateTime('pickup_time');
-            $table->enum('payment_status', ['pending', 'paid', 'failed'])->default('pending');
+            $table->string('payment_status')->default('pending');
             $table->string('payment_ref')->nullable();
             $table->timestamps();
         });

@@ -19,10 +19,10 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('phone');
-            $table->enum('role', ['buyer', 'seller', 'apartment_admin', 'super_admin'])->default('buyer');
+            $table->string('role')->default('customer');
             $table->string('unit_no')->nullable();
             $table->string('block')->nullable();
-            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->string('status')->default('active');
             $table->rememberToken();
             $table->timestamps();
         });
