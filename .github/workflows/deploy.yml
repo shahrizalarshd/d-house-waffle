@@ -1,0 +1,54 @@
+name: 🚀 Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  deploy:
+    name: Deploy to DigitalOcean
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔑 Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+
+      - name: 🚀 Deploy to server
+        run: |
+          ssh -o StrictHostKeyChecking=no root@${{ secrets.SERVER_IP }} << 'ENDSSH'
+            cd /var/www/d-house-waffle
+
+            echo "📥 Pulling latest code from GitHub..."
+            git pull origin main || git pull origin master
+
+            echo "🔧 Clearing caches..."
+            docker compose exec -T laravel.test php artisan config:clear
+            docker compose exec -T laravel.test php artisan cache:clear
+            docker compose exec -T laravel.test php artisan view:clear
+            docker compose exec -T laravel.test php artisan route:clear
+
+            echo "🗄️  Running migrations..."
+            docker compose exec -T laravel.test php artisan migrate --force
+
+            echo "⚡ Caching configuration..."
+            docker compose exec -T laravel.test php artisan config:cache
+            docker compose exec -T laravel.test php artisan route:cache
+            docker compose exec -T laravel.test php artisan view:cache
+
+            echo "🔄 Restarting services..."
+            docker compose restart laravel.test
+
+            echo "✅ Deployment complete!"
+          ENDSSH
+
+      - name: ✅ Deployment successful
+        run: echo "🎉 Production deployment successful!"
