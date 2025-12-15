@@ -55,9 +55,22 @@ class AuthController extends Controller
             'block' => 'nullable|string|max:50',
         ]);
 
-        // For MVP, hardcode apartment_id = 1 (single tenant)
+        // Get or create default apartment (for MVP single tenant)
+        $apartment = \App\Models\Apartment::first();
+        if (!$apartment) {
+            $apartment = \App\Models\Apartment::create([
+                'name' => "D'house Waffle",
+                'address' => 'Default Location',
+                'service_fee_percent' => 0.00,
+                'pickup_location' => 'Lobby Utama',
+                'pickup_start_time' => '09:00:00',
+                'pickup_end_time' => '21:00:00',
+                'status' => 'active',
+            ]);
+        }
+
         $user = User::create([
-            'apartment_id' => 1,
+            'apartment_id' => $apartment->id,
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
