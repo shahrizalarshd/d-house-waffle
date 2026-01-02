@@ -8,6 +8,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SellerApplicationController;
 use App\Http\Controllers\PaymentWebhookController;
+use App\Http\Controllers\BannerController;
 use Illuminate\Support\Facades\Route;
 
 // Public routes
@@ -28,26 +29,46 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::post('/webhook/billplz', [PaymentWebhookController::class, 'billplz'])->name('webhook.billplz');
 Route::post('/webhook/toyyibpay', [PaymentWebhookController::class, 'toyyibpay'])->name('webhook.toyyibpay');
 
-// Authenticated routes
+// ==========================================
+// PUBLIC ROUTES (Guest Checkout Support)
+// ==========================================
+
+// Public menu browsing - anyone can view without login
+Route::get('/menu', [BuyerController::class, 'publicMenu'])->name('menu');
+Route::get('/cart', [BuyerController::class, 'cart'])->name('cart');
+
+// Guest checkout - allows ordering without account
+Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout');
+Route::post('/orders/place', [OrderController::class, 'placeOrder'])->name('orders.place');
+
+// Guest order tracking - public with token
+Route::get('/track/{token}', [OrderController::class, 'trackGuestOrder'])->name('order.track');
+
+// QR Payment for guest orders
+Route::get('/orders/{id}/qr-payment', [OrderController::class, 'showQRPayment'])->name('orders.qr-payment');
+Route::post('/orders/{id}/upload-proof', [OrderController::class, 'uploadPaymentProof'])->name('orders.upload-proof');
+
+// Public API for banners
+Route::get('/api/banners', [BannerController::class, 'getActiveBanners'])->name('api.banners');
+
+// ==========================================
+// AUTHENTICATED ROUTES
+// ==========================================
 Route::middleware('auth')->group(function () {
     
     // Buyer routes (all authenticated users can access)
     Route::get('/home', [BuyerController::class, 'home'])->name('home');
     Route::get('/products', [BuyerController::class, 'products'])->name('products');
-    Route::get('/cart', [BuyerController::class, 'cart'])->name('cart');
     Route::get('/orders', [BuyerController::class, 'orders'])->name('buyer.orders');
     Route::get('/orders/{id}', [BuyerController::class, 'orderDetail'])->name('buyer.order.detail');
     Route::get('/profile', [BuyerController::class, 'profile'])->name('buyer.profile');
     Route::put('/profile', [BuyerController::class, 'updateProfile'])->name('buyer.profile.update');
     
-    // Checkout and order placement
-    Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout');
-    Route::post('/orders/place', [OrderController::class, 'placeOrder'])->name('orders.place');
-    Route::get('/payment/{id}', [OrderController::class, 'showPayment'])->name('payment.show');
+    // Loyalty page for customers
+    Route::get('/loyalty', [BuyerController::class, 'loyalty'])->name('buyer.loyalty');
     
-    // QR Payment routes
-    Route::get('/orders/{id}/qr-payment', [OrderController::class, 'showQRPayment'])->name('orders.qr-payment');
-    Route::post('/orders/{id}/upload-proof', [OrderController::class, 'uploadPaymentProof'])->name('orders.upload-proof');
+    // Payment page (for logged in users)
+    Route::get('/payment/{id}', [OrderController::class, 'showPayment'])->name('payment.show');
     
     // Seller application routes removed - D'house Waffle is single seller
     
@@ -83,6 +104,18 @@ Route::middleware('auth')->group(function () {
         Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
         Route::put('/settings', [AdminController::class, 'updateSettings'])->name('settings.update');
         Route::get('/all-orders', [AdminController::class, 'orders'])->name('all-orders');
+        
+        // Loyalty settings
+        Route::get('/loyalty-settings', [AdminController::class, 'loyaltySettings'])->name('loyalty-settings');
+        Route::put('/loyalty-settings', [AdminController::class, 'updateLoyaltySettings'])->name('loyalty-settings.update');
+        
+        // Banner management
+        Route::get('/banners', [BannerController::class, 'index'])->name('banners');
+        Route::post('/banners', [BannerController::class, 'store'])->name('banners.store');
+        Route::put('/banners/{banner}', [BannerController::class, 'update'])->name('banners.update');
+        Route::post('/banners/{banner}/toggle', [BannerController::class, 'toggle'])->name('banners.toggle');
+        Route::delete('/banners/{banner}', [BannerController::class, 'destroy'])->name('banners.destroy');
+        Route::post('/banners/reorder', [BannerController::class, 'reorder'])->name('banners.reorder');
         
         // QR setup
         Route::get('/profile', [SellerController::class, 'profile'])->name('profile');

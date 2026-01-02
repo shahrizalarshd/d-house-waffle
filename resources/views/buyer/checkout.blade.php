@@ -9,6 +9,142 @@
         <h1 class="text-2xl font-bold text-gray-800">Checkout</h1>
     </div>
 
+    @guest
+    <!-- Guest Checkout Option -->
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+        <h3 class="font-bold text-lg mb-4">How would you like to order?</h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Login Option -->
+            <div class="border-2 border-gray-200 rounded-lg p-4 hover:border-amber-500 transition cursor-pointer" onclick="window.location.href='{{ route('login') }}?redirect=checkout'">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-amber-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold">Login / Register</h4>
+                        <p class="text-sm text-gray-500">Earn loyalty rewards!</p>
+                    </div>
+                </div>
+                <ul class="text-sm text-gray-600 space-y-1">
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Collect stamps for discounts</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Track order history</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Faster checkout next time</li>
+                </ul>
+                <button class="w-full mt-4 bg-amber-500 text-white py-2 rounded-lg hover:bg-amber-600 transition">
+                    Login Now
+                </button>
+            </div>
+
+            <!-- Guest Option -->
+            <div class="border-2 border-gray-200 rounded-lg p-4 hover:border-green-500 transition cursor-pointer" id="guest-option" onclick="showGuestForm()">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-bolt text-green-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold">Quick Order</h4>
+                        <p class="text-sm text-gray-500">No account needed</p>
+                    </div>
+                </div>
+                <ul class="text-sm text-gray-600 space-y-1">
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Order in seconds</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Just enter your details</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Get tracking link</li>
+                </ul>
+                <button class="w-full mt-4 bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition">
+                    Continue as Guest
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Guest Details Form (Hidden by default) -->
+    <div id="guest-form" class="bg-white rounded-lg shadow p-6 mb-6 hidden">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="font-bold text-lg">📝 Your Details</h3>
+            <button onclick="hideGuestForm()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                <input type="text" id="guest_name" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-amber-500"
+                    placeholder="Your name">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+                <input type="tel" id="guest_phone" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-amber-500"
+                    placeholder="012-3456789">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Block *</label>
+                <input type="text" id="guest_block" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-amber-500"
+                    placeholder="A">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Unit No *</label>
+                <input type="text" id="guest_unit_no" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-amber-500"
+                    placeholder="12-05">
+            </div>
+        </div>
+        
+        <div class="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+            <p class="text-sm text-amber-800">
+                <i class="fas fa-lightbulb mr-1"></i>
+                <strong>Tip:</strong> Register to earn loyalty stamps and get discounts on future orders!
+            </p>
+        </div>
+    </div>
+    @endguest
+
+    @auth
+    <!-- Logged in user info -->
+    <div class="bg-white rounded-lg shadow p-4 mb-6">
+        <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
+                <i class="fas fa-user text-amber-600 text-xl"></i>
+            </div>
+            <div>
+                <p class="font-semibold">{{ auth()->user()->name }}</p>
+                <p class="text-sm text-gray-500">
+                    Block {{ auth()->user()->block ?? '-' }}, Unit {{ auth()->user()->unit_no ?? '-' }}
+                </p>
+            </div>
+        </div>
+        
+        @if($loyaltySummary && $loyaltySummary['enabled'])
+        <div class="mt-4 p-3 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-amber-800">
+                        {{ $loyaltySummary['tier_emoji'] }} {{ ucfirst($loyaltySummary['tier']) }} Member
+                    </p>
+                    <p class="text-xs text-amber-600">
+                        {{ $loyaltySummary['stamps'] }}/{{ $loyaltySummary['stamps_required'] }} stamps collected
+                    </p>
+                </div>
+                @if($loyaltySummary['has_discount'])
+                <div class="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold animate-pulse">
+                    {{ $loyaltySummary['discount_percent'] }}% OFF!
+                </div>
+                @elseif($loyaltySummary['is_close_to_discount'])
+                <div class="text-amber-600 text-sm">
+                    <i class="fas fa-fire"></i> Almost there!
+                </div>
+                @endif
+            </div>
+        </div>
+        @endif
+    </div>
+    @endauth
+
     <div id="checkout-items" class="space-y-4 mb-6">
         <!-- Items will be loaded by JavaScript -->
     </div>
@@ -126,6 +262,16 @@
                 <span>Subtotal:</span>
                 <span id="subtotal">RM 0.00</span>
             </div>
+            
+            @auth
+            @if($loyaltySummary && $loyaltySummary['has_discount'])
+            <div class="flex justify-between text-green-600">
+                <span>🎁 Loyalty Discount ({{ $loyaltySummary['discount_percent'] }}%):</span>
+                <span id="loyalty-discount">- RM 0.00</span>
+            </div>
+            @endif
+            @endauth
+            
             <div class="flex justify-between text-gray-500">
                 <span>Service Fee:</span>
                 <span id="platform-fee">RM 0.00</span>
@@ -137,7 +283,7 @@
         </div>
     </div>
 
-    <button onclick="placeOrder()" 
+    <button onclick="placeOrder()" id="place-order-btn"
         class="w-full waffle-gradient text-white py-4 rounded-lg hover:shadow-lg transition font-bold text-lg">
         🧇 Place Order Now
     </button>
@@ -146,6 +292,22 @@
 @push('scripts')
 <script>
 let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+const isGuest = {{ auth()->check() ? 'false' : 'true' }};
+const hasLoyaltyDiscount = {{ (auth()->check() && isset($loyaltySummary) && $loyaltySummary['has_discount']) ? 'true' : 'false' }};
+const loyaltyDiscountPercent = {{ (auth()->check() && isset($loyaltySummary)) ? $loyaltySummary['discount_percent'] : 0 }};
+let guestFormShown = false;
+
+function showGuestForm() {
+    document.getElementById('guest-form').classList.remove('hidden');
+    document.getElementById('guest-option').classList.add('hidden');
+    guestFormShown = true;
+}
+
+function hideGuestForm() {
+    document.getElementById('guest-form').classList.add('hidden');
+    document.getElementById('guest-option').classList.remove('hidden');
+    guestFormShown = false;
+}
 
 function renderCheckout() {
     const container = document.getElementById('checkout-items');
@@ -168,14 +330,28 @@ function renderCheckout() {
     `).join('');
 
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const platformFee = subtotal * 0.05;
-    const total = subtotal + platformFee;
+    let discount = 0;
+    
+    if (hasLoyaltyDiscount) {
+        discount = subtotal * (loyaltyDiscountPercent / 100);
+        const discountEl = document.getElementById('loyalty-discount');
+        if (discountEl) {
+            discountEl.textContent = `- RM ${discount.toFixed(2)}`;
+        }
+    }
+    
+    const afterDiscount = subtotal - discount;
+    const platformFee = afterDiscount * {{ $apartment->service_fee_percent ?? 0 }} / 100;
+    const total = afterDiscount + platformFee;
 
     document.getElementById('subtotal').textContent = `RM ${subtotal.toFixed(2)}`;
     document.getElementById('platform-fee').textContent = `RM ${platformFee.toFixed(2)}`;
     document.getElementById('total').textContent = `RM ${total.toFixed(2)}`;
-    document.getElementById('cash-total').textContent = `RM ${total.toFixed(2)}`;
-    document.getElementById('qr-total').textContent = `RM ${total.toFixed(2)}`;
+    
+    const cashTotal = document.getElementById('cash-total');
+    const qrTotal = document.getElementById('qr-total');
+    if (cashTotal) cashTotal.textContent = `RM ${total.toFixed(2)}`;
+    if (qrTotal) qrTotal.textContent = `RM ${total.toFixed(2)}`;
 }
 
 // Payment method selection handler
@@ -211,7 +387,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Initialize first available option (find checked radio and highlight its container)
+    // Initialize first available option
     const checkedRadio = document.querySelector('input[name="payment_method"]:checked');
     if (checkedRadio) {
         const method = checkedRadio.value;
@@ -229,7 +405,12 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 async function placeOrder() {
-    const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+    const paymentMethodEl = document.querySelector('input[name="payment_method"]:checked');
+    if (!paymentMethodEl) {
+        showToast('Please select a payment method', 'error');
+        return;
+    }
+    const paymentMethod = paymentMethodEl.value;
     
     const orderData = {
         cart: cart.map(item => ({
@@ -238,6 +419,34 @@ async function placeOrder() {
         })),
         payment_method: paymentMethod
     };
+
+    // Add guest data if guest checkout
+    if (isGuest) {
+        if (!guestFormShown) {
+            showToast('Please choose how you want to order', 'error');
+            return;
+        }
+        
+        const guestName = document.getElementById('guest_name').value.trim();
+        const guestPhone = document.getElementById('guest_phone').value.trim();
+        const guestBlock = document.getElementById('guest_block').value.trim();
+        const guestUnitNo = document.getElementById('guest_unit_no').value.trim();
+        
+        if (!guestName || !guestPhone || !guestBlock || !guestUnitNo) {
+            showToast('Please fill in all your details', 'error');
+            return;
+        }
+        
+        orderData.guest_name = guestName;
+        orderData.guest_phone = guestPhone;
+        orderData.guest_block = guestBlock;
+        orderData.guest_unit_no = guestUnitNo;
+    }
+
+    // Disable button
+    const btn = document.getElementById('place-order-btn');
+    btn.disabled = true;
+    btn.textContent = 'Processing...';
 
     try {
         const response = await fetch('{{ route("orders.place") }}', {
@@ -250,16 +459,25 @@ async function placeOrder() {
             body: JSON.stringify(orderData)
         });
 
-        if (response.ok) {
+        const data = await response.json();
+
+        if (response.ok && data.success) {
             localStorage.removeItem('cart');
-            const data = await response.json();
-            window.location.href = data.redirect || '{{ route("buyer.orders") }}';
+            showToast(data.message || 'Order placed successfully!', 'success');
+            
+            setTimeout(() => {
+                window.location.href = data.redirect || '{{ route("menu") }}';
+            }, 1000);
         } else {
-            showToast('Failed to place order. Please try again.', 'error');
+            showToast(data.message || 'Failed to place order. Please try again.', 'error');
+            btn.disabled = false;
+            btn.textContent = '🧇 Place Order Now';
         }
     } catch (error) {
         console.error('Error:', error);
         showToast('An error occurred. Please try again.', 'error');
+        btn.disabled = false;
+        btn.textContent = '🧇 Place Order Now';
     }
 }
 
@@ -267,4 +485,3 @@ renderCheckout();
 </script>
 @endpush
 @endsection
-

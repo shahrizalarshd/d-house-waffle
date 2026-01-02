@@ -70,6 +70,70 @@
             </div>
         </div>
     </nav>
+    
+    <!-- Desktop Navigation for Owner/Staff -->
+    @if(auth()->user()->role === 'owner' || auth()->user()->role === 'staff')
+    <nav class="hidden md:block bg-white border-b border-gray-200 shadow-sm sticky top-16 z-40">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex items-center space-x-1 py-2 overflow-x-auto">
+                @if(auth()->user()->role === 'owner')
+                <a href="{{ route('owner.dashboard') }}" 
+                   class="flex items-center gap-2 px-4 py-2 rounded-lg transition font-medium {{ request()->routeIs('owner.dashboard') ? 'bg-amber-100 text-amber-700' : 'text-gray-600 hover:bg-gray-100' }}">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ route('owner.orders') }}" 
+                   class="flex items-center gap-2 px-4 py-2 rounded-lg transition font-medium {{ request()->routeIs('owner.orders') ? 'bg-amber-100 text-amber-700' : 'text-gray-600 hover:bg-gray-100' }}">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Orders</span>
+                    @if($pendingOrdersCount > 0)
+                    <span class="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">{{ $pendingOrdersCount }}</span>
+                    @endif
+                </a>
+                <a href="{{ route('owner.products') }}" 
+                   class="flex items-center gap-2 px-4 py-2 rounded-lg transition font-medium {{ request()->routeIs('owner.products*') ? 'bg-amber-100 text-amber-700' : 'text-gray-600 hover:bg-gray-100' }}">
+                    <i class="fas fa-utensils"></i>
+                    <span>Menu</span>
+                </a>
+                <a href="{{ route('owner.sales-report') }}" 
+                   class="flex items-center gap-2 px-4 py-2 rounded-lg transition font-medium {{ request()->routeIs('owner.sales-report') ? 'bg-amber-100 text-amber-700' : 'text-gray-600 hover:bg-gray-100' }}">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reports</span>
+                </a>
+                <a href="{{ route('owner.banners') }}" 
+                   class="flex items-center gap-2 px-4 py-2 rounded-lg transition font-medium {{ request()->routeIs('owner.banners') ? 'bg-amber-100 text-amber-700' : 'text-gray-600 hover:bg-gray-100' }}">
+                    <i class="fas fa-images"></i>
+                    <span>Banners</span>
+                </a>
+                <a href="{{ route('owner.loyalty-settings') }}" 
+                   class="flex items-center gap-2 px-4 py-2 rounded-lg transition font-medium {{ request()->routeIs('owner.loyalty-settings') ? 'bg-amber-100 text-amber-700' : 'text-gray-600 hover:bg-gray-100' }}">
+                    <i class="fas fa-gift"></i>
+                    <span>Loyalty</span>
+                </a>
+                <a href="{{ route('owner.settings') }}" 
+                   class="flex items-center gap-2 px-4 py-2 rounded-lg transition font-medium {{ request()->routeIs('owner.settings') ? 'bg-amber-100 text-amber-700' : 'text-gray-600 hover:bg-gray-100' }}">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+                @elseif(auth()->user()->role === 'staff')
+                <a href="{{ route('staff.dashboard') }}" 
+                   class="flex items-center gap-2 px-4 py-2 rounded-lg transition font-medium {{ request()->routeIs('staff.dashboard') ? 'bg-amber-100 text-amber-700' : 'text-gray-600 hover:bg-gray-100' }}">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ route('staff.orders') }}" 
+                   class="flex items-center gap-2 px-4 py-2 rounded-lg transition font-medium {{ request()->routeIs('staff.orders') ? 'bg-amber-100 text-amber-700' : 'text-gray-600 hover:bg-gray-100' }}">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Orders</span>
+                    @if($pendingOrdersCount > 0)
+                    <span class="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">{{ $pendingOrdersCount }}</span>
+                    @endif
+                </a>
+                @endif
+            </div>
+        </div>
+    </nav>
+    @endif
     @endauth
 
     {{-- Flash Messages now handled by toast notifications below --}}
@@ -103,13 +167,13 @@
                 </div>
                 <span class="text-xs font-medium">Cart</span>
             </a>
+            <a href="{{ route('buyer.loyalty') }}" class="flex flex-col items-center {{ request()->routeIs('buyer.loyalty') ? 'text-amber-600' : 'text-gray-500' }} hover:text-amber-600 transition">
+                <i class="fas fa-trophy text-xl mb-1"></i>
+                <span class="text-xs font-medium">Loyalty</span>
+            </a>
             <a href="{{ route('buyer.orders') }}" class="flex flex-col items-center {{ request()->routeIs('buyer.orders') ? 'text-amber-600' : 'text-gray-500' }} hover:text-amber-600 transition">
                 <i class="fas fa-receipt text-xl mb-1"></i>
                 <span class="text-xs font-medium">Orders</span>
-            </a>
-            <a href="{{ route('buyer.profile') }}" class="flex flex-col items-center {{ request()->routeIs('buyer.profile') ? 'text-amber-600' : 'text-gray-500' }} hover:text-amber-600 transition">
-                <i class="fas fa-user-circle text-xl mb-1"></i>
-                <span class="text-xs font-medium">Profile</span>
             </a>
             @endif
 

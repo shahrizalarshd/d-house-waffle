@@ -9,6 +9,26 @@
         <h1 class="text-2xl font-bold text-gray-800">D'house Waffle Settings</h1>
     </div>
 
+    <!-- Quick Access Links -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+        <a href="{{ route('owner.banners') }}" class="bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-xl p-4 text-center hover:shadow-lg transition transform hover:-translate-y-0.5">
+            <i class="fas fa-images text-2xl mb-2"></i>
+            <p class="font-semibold text-sm">Banners</p>
+        </a>
+        <a href="{{ route('owner.loyalty-settings') }}" class="bg-gradient-to-br from-amber-500 to-orange-500 text-white rounded-xl p-4 text-center hover:shadow-lg transition transform hover:-translate-y-0.5">
+            <i class="fas fa-gift text-2xl mb-2"></i>
+            <p class="font-semibold text-sm">Loyalty</p>
+        </a>
+        <a href="{{ route('owner.products') }}" class="bg-gradient-to-br from-green-500 to-teal-500 text-white rounded-xl p-4 text-center hover:shadow-lg transition transform hover:-translate-y-0.5">
+            <i class="fas fa-utensils text-2xl mb-2"></i>
+            <p class="font-semibold text-sm">Products</p>
+        </a>
+        <a href="{{ route('owner.profile') }}" class="bg-gradient-to-br from-blue-500 to-indigo-500 text-white rounded-xl p-4 text-center hover:shadow-lg transition transform hover:-translate-y-0.5">
+            <i class="fas fa-qrcode text-2xl mb-2"></i>
+            <p class="font-semibold text-sm">QR Setup</p>
+        </a>
+    </div>
+
     <div class="bg-white rounded-lg shadow-xl p-6">
         @if($errors->any())
         <div class="bg-red-50 border-l-4 border-red-500 text-red-800 px-4 py-3 rounded-r mb-4">

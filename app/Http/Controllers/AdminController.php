@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Apartment;
+use App\Models\LoyaltySetting;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -52,5 +53,54 @@ class AdminController extends Controller
         $apartment->update($validated);
 
         return back()->with('success', '✅ Settings updated successfully');
+    }
+
+    /**
+     * Show loyalty settings page
+     */
+    public function loyaltySettings()
+    {
+        $apartment = Apartment::find(auth()->user()->apartment_id);
+        $loyaltySettings = LoyaltySetting::getForApartment($apartment->id);
+        
+        return view('owner.loyalty-settings', compact('apartment', 'loyaltySettings'));
+    }
+
+    /**
+     * Update loyalty settings
+     */
+    public function updateLoyaltySettings(Request $request)
+    {
+        $validated = $request->validate([
+            'guest_checkout_enabled' => 'nullable|boolean',
+            'guest_pending_limit' => 'required|integer|min:1|max:10',
+            'loyalty_enabled' => 'nullable|boolean',
+            'stamps_required' => 'required|integer|min:2|max:20',
+            'stamp_discount_percent' => 'required|numeric|min:1|max:50',
+            'discount_validity_days' => 'required|integer|min:7|max:90',
+            'tiers_enabled' => 'nullable|boolean',
+            'silver_threshold' => 'required|integer|min:5|max:100',
+            'gold_threshold' => 'required|integer|min:10|max:200',
+            'silver_bonus_percent' => 'required|numeric|min:0|max:20',
+            'gold_bonus_percent' => 'required|numeric|min:0|max:30',
+        ]);
+
+        // Convert checkbox values
+        $validated['guest_checkout_enabled'] = $request->has('guest_checkout_enabled');
+        $validated['loyalty_enabled'] = $request->has('loyalty_enabled');
+        $validated['tiers_enabled'] = $request->has('tiers_enabled');
+
+        // Validate gold threshold is greater than silver
+        if ($validated['gold_threshold'] <= $validated['silver_threshold']) {
+            return back()->withErrors([
+                'gold_threshold' => 'Gold threshold must be greater than Silver threshold.'
+            ])->withInput();
+        }
+
+        $apartment = Apartment::find(auth()->user()->apartment_id);
+        $loyaltySettings = LoyaltySetting::getForApartment($apartment->id);
+        $loyaltySettings->update($validated);
+
+        return back()->with('success', '✅ Loyalty settings updated successfully');
     }
 }

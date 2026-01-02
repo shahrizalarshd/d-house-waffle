@@ -33,16 +33,19 @@
                         <div class="space-y-1">
                             <p class="text-sm text-gray-800 flex items-center gap-2">
                                 <i class="fas fa-user text-amber-600 w-4"></i>
-                                <span class="font-semibold">{{ $order->buyer->name }}</span>
+                                <span class="font-semibold">{{ $order->getCustomerName() }}</span>
+                                @if($order->isGuestOrder())
+                                <span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">Guest</span>
+                                @endif
                             </p>
                             <p class="text-sm text-gray-700 flex items-center gap-2">
                                 <i class="fas fa-home text-amber-600 w-4"></i>
-                                <span>Unit {{ $order->buyer->unit_no }}, Block {{ $order->buyer->block }}</span>
+                                <span>{{ $order->getCustomerAddress() }}</span>
                             </p>
                             <p class="text-sm text-gray-700 flex items-center gap-2">
                                 <i class="fas fa-phone text-amber-600 w-4"></i>
-                                <a href="tel:{{ $order->buyer->phone }}" class="text-blue-600 hover:underline font-medium">
-                                    {{ $order->buyer->phone }}
+                                <a href="tel:{{ $order->getCustomerPhone() }}" class="text-blue-600 hover:underline font-medium">
+                                    {{ $order->getCustomerPhone() }}
                                 </a>
                             </p>
                             <p class="text-xs text-gray-500 flex items-center gap-2 mt-1">

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\Product;
 use App\Exports\OrdersExport;
+use App\Services\LoyaltyService;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -54,8 +55,25 @@ class SellerController extends Controller
             'status' => 'required|in:pending,preparing,ready,completed,cancelled',
         ]);
 
-        $order = Order::where('seller_id', auth()->id())->findOrFail($id);
-        $order->update(['status' => $request->status]);
+        $order = Order::with('buyer')->where('seller_id', auth()->id())->findOrFail($id);
+        $oldStatus = $order->status;
+        $newStatus = $request->status;
+        
+        $order->update(['status' => $newStatus]);
+
+        // Award loyalty stamp when order is completed (only for registered users)
+        if ($newStatus === 'completed' && $oldStatus !== 'completed' && $order->buyer_id) {
+            $loyaltyService = app(LoyaltyService::class);
+            $loyaltyService->awardStamp($order->buyer, $order);
+        }
+
+        // Reverse stamp if order is cancelled within same day (for registered users)
+        if ($newStatus === 'cancelled' && $oldStatus === 'completed' && $order->buyer_id) {
+            if ($order->updated_at->isToday()) {
+                $loyaltyService = app(LoyaltyService::class);
+                $loyaltyService->reverseStamp($order->buyer, $order);
+            }
+        }
 
         return back()->with('success', 'Order status updated successfully');
     }
@@ -71,7 +89,8 @@ class SellerController extends Controller
 
     public function markAsPaid(Request $request, $id)
     {
-        $order = Order::where('seller_id', auth()->id())
+        $order = Order::with('buyer')
+            ->where('seller_id', auth()->id())
             ->findOrFail($id);
 
         // Verify it's cash payment
@@ -84,6 +103,8 @@ class SellerController extends Controller
             return back()->with('error', 'Order already marked as paid.');
         }
 
+        $oldStatus = $order->status;
+
         // Update order
         $order->update([
             'payment_status' => 'paid',
@@ -91,12 +112,19 @@ class SellerController extends Controller
             'paid_at' => now(),
         ]);
 
+        // Award loyalty stamp (only for registered users)
+        if ($oldStatus !== 'completed' && $order->buyer_id) {
+            $loyaltyService = app(LoyaltyService::class);
+            $loyaltyService->awardStamp($order->buyer, $order);
+        }
+
         // Log the confirmation
         \Log::info('Cash payment confirmed', [
             'order_id' => $order->id,
             'order_no' => $order->order_no,
             'seller_id' => auth()->id(),
             'amount' => $order->total_amount,
+            'is_guest' => $order->isGuestOrder(),
         ]);
 
         return back()->with('success', 'Cash payment confirmed! Order completed.');
@@ -128,11 +156,19 @@ class SellerController extends Controller
         ]);
 
         if ($request->action === 'approve') {
+            $oldStatus = $order->status;
+
             $order->update([
                 'payment_status' => 'paid',
                 'status' => 'completed',
                 'paid_at' => now(),
             ]);
+
+            // Award loyalty stamp (only for registered users)
+            if ($oldStatus !== 'completed' && $order->buyer_id) {
+                $loyaltyService = app(LoyaltyService::class);
+                $loyaltyService->awardStamp($order->buyer, $order);
+            }
 
             // Log the verification
             \Log::info('QR payment verified', [
@@ -141,6 +177,7 @@ class SellerController extends Controller
                 'seller_id' => auth()->id(),
                 'buyer_id' => $order->buyer_id,
                 'amount' => $order->total_amount,
+                'is_guest' => $order->isGuestOrder(),
             ]);
 
             return back()->with('success', 'Payment verified! Order completed.');

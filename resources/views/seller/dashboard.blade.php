@@ -57,6 +57,11 @@
             <i class="fas fa-qrcode text-2xl mb-2"></i>
             <p class="font-semibold">QR Payment Setup</p>
         </a>
+        <a href="{{ route('owner.loyalty-settings') }}" 
+            class="bg-gradient-to-r from-yellow-500 to-amber-500 text-white p-4 rounded-lg text-center hover:from-yellow-600 hover:to-amber-600 transition">
+            <i class="fas fa-trophy text-2xl mb-2"></i>
+            <p class="font-semibold">Loyalty Settings</p>
+        </a>
         @endif
     </div>
 
@@ -79,7 +84,12 @@
                 <div class="flex justify-between items-start mb-2">
                     <div>
                         <p class="font-semibold">{{ $order->order_no }}</p>
-                        <p class="text-sm text-gray-600">{{ $order->buyer->name }}</p>
+                        <p class="text-sm text-gray-600">
+                            {{ $order->getCustomerName() }}
+                            @if($order->isGuestOrder())
+                            <span class="text-xs bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded ml-1">Guest</span>
+                            @endif
+                        </p>
                     </div>
                     <span class="px-2 py-1 rounded-full text-xs font-semibold
                         @if($order->status === 'completed') bg-green-100 text-green-800

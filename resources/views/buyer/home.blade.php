@@ -4,10 +4,41 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 py-6">
-    <!-- Welcome Banner -->
+    <!-- Welcome Banner with Loyalty Info -->
     <div class="bg-gradient-to-r from-amber-500 to-orange-500 rounded-lg shadow-lg p-6 mb-6 text-white">
-        <h1 class="text-3xl font-bold mb-2">🧇 Welcome to D'house Waffle!</h1>
-        <p class="text-amber-50">Delicious handmade waffles delivered fresh to your doorstep</p>
+        <div class="flex justify-between items-start">
+            <div>
+                <h1 class="text-3xl font-bold mb-2">🧇 Welcome, {{ auth()->user()->name }}!</h1>
+                <p class="text-amber-50">Delicious handmade waffles delivered fresh to your doorstep</p>
+            </div>
+            @if(isset($loyaltySummary) && $loyaltySummary['enabled'])
+            <a href="{{ route('buyer.loyalty') }}" class="bg-white/20 rounded-lg p-3 text-center hover:bg-white/30 transition">
+                <p class="text-2xl mb-1">{{ $loyaltySummary['tier_emoji'] }}</p>
+                <p class="text-xs">{{ $loyaltySummary['stamps'] }}/{{ $loyaltySummary['stamps_required'] }}</p>
+            </a>
+            @endif
+        </div>
+        
+        @if(isset($loyaltySummary) && $loyaltySummary['enabled'])
+        <div class="mt-4 bg-white/20 rounded-lg p-3">
+            @if($loyaltySummary['has_discount'])
+            <p class="text-sm font-semibold">
+                🎁 You have <span class="text-yellow-200">{{ $loyaltySummary['discount_percent'] }}% OFF</span> available!
+                <a href="{{ route('checkout') }}" class="underline ml-1">Use it now →</a>
+            </p>
+            @elseif($loyaltySummary['is_close_to_discount'])
+            <p class="text-sm">
+                <i class="fas fa-fire animate-pulse"></i>
+                Just <strong>{{ $loyaltySummary['stamps_remaining'] }}</strong> more order(s) to unlock {{ $loyaltySummary['discount_percent'] }}% discount!
+            </p>
+            @else
+            <p class="text-sm">
+                <i class="fas fa-gift mr-1"></i>
+                {{ $loyaltySummary['stamps_remaining'] }} more orders to unlock {{ $loyaltySummary['discount_percent'] }}% discount
+            </p>
+            @endif
+        </div>
+        @endif
     </div>
 
     <!-- Search and Filter -->
